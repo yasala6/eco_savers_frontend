@@ -1,0 +1,35 @@
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #e8f5e9;
+  padding: 60px 40px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.text {
+  max-width: 600px;
+}
+
+.text h1 {
+  font-size: 2.5rem;
+  color: #2e7d32;
+  margin-bottom: 15px;
+}
+
+.text p {
+  font-size: 1.2rem;
+  color: #4e4e4e;
+  line-height: 1.6;
+}
+
+.image {
+  max-width: 400px;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
+}
