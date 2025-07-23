@@ -39,3 +39,7 @@ button {
 button:hover {
   background-color: #2e7d32;
 }
+.error {
+  color: red;
+  margin-top: 10px;
+}

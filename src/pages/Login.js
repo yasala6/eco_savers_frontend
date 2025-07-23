@@ -7,18 +7,44 @@ const Login = () => {
   const [credentials, setCredentials] = useState({ email: '', password: '' });
   const { setUser } = useAuth();
   const navigate = useNavigate();
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate authentication
-    setUser({ email: credentials.email });
-    alert('Logged in successfully!');
-    navigate('/');
+    setError('');
+
+    try {
+      const res = await fetch('http://localhost:3009/eco_savers/autenticate/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userEmail: credentials.email,
+          Password: credentials.password
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.status === 200) {
+        // Save user and token
+        localStorage.setItem('token', data.token);
+        setUser(data.results[0]);
+        alert('Logged in successfully!');
+        navigate('/shop');
+      } else {
+        setError(data.message || 'Login failed');
+      }
+    } catch (err) {
+      setError('Server error. Please try again later.');
+      console.error('Login error:', err);
+    }
   };
 
   return (
@@ -42,6 +68,8 @@ const Login = () => {
           onChange={handleChange}
           required
         />
+
+        {error && <p className={styles.error}>{error}</p>}
 
         <button type="submit">Login</button>
       </form>
