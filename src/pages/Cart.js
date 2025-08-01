@@ -20,19 +20,26 @@ const Cart = () => {
   }, [user]);
 
   const fetchCart = async () => {
-  try {
-    const response = await axios.get(`http://localhost:3009/eco_savers/cart?user_id=${user.user_id}`);
-    setCart(response.data.data);
-  } catch (err) {
-    console.error('Error loading cart:', err);
-  }
-};
+    try {
+      setLoading(true);
+      const response = await axios.get('http://localhost:3009/eco_savers/cart', {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setCart(response.data.data);
+      setLoading(false);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to load cart');
+      setLoading(false);
+    }
+  };
 
   const updateQuantity = async (foodId, newQuantity) => {
     if (newQuantity < 1) return;
     
     try {
-      await axios.put('http://localhost:3009/eco_savers/cart/update', 
+      await axios.put('/api/cart/update', 
         { food_id: foodId, quantity: newQuantity },
         {
           headers: {
