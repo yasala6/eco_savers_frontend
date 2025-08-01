@@ -4,7 +4,15 @@
   min-height: 100vh;
 }
 
-.content {
+.mainLayout {
+  display: flex;
+  flex: 1;
+  min-height: calc(100vh - 120px); /* adjust if navbar/footer are fixed */
+}
+
+.pageContent {
   flex: 1;
   padding: 20px;
+  margin-left: 200px; /* reserve space when sidebar is shown */
 }
+
