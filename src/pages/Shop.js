@@ -73,23 +73,57 @@ const Shop = () => {
     setFilteredProducts(result);
   };
 
-  const addToCart = (product) => {
-    const existingItem = cart.find(item => item.food_id === product.food_id);
-    let updatedCart;
-    
-    if (existingItem) {
-      updatedCart = cart.map(item =>
-        item.food_id === product.food_id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      );
-    } else {
-      updatedCart = [...cart, { ...product, quantity: 1 }];
-    }
+  const addToCart = async (product) => {
+  const userId = localStorage.getItem('user_id');
+  const token = localStorage.getItem('token');
 
-    setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
-  };
+  if (!userId || !token) {
+    alert("Please log in to add items to your cart.");
+    return;
+  }
+
+  try {
+    const res = await fetch('http://localhost:3009/eco_savers/cart/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}` // ✅ Send token here
+      },
+      body: JSON.stringify({
+        user_id: userId,
+        food_id: product.food_id,
+        quantity: 1
+      })
+    });
+
+    const data = await res.json();
+
+    if (res.ok && data.status === 200) {
+      const existingItem = cart.find(item => item.food_id === product.food_id);
+      let updatedCart;
+
+      if (existingItem) {
+        updatedCart = cart.map(item =>
+          item.food_id === product.food_id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        updatedCart = [...cart, { ...product, quantity: 1 }];
+      }
+
+      setCart(updatedCart);
+      localStorage.setItem('cart', JSON.stringify(updatedCart));
+    } else {
+      alert(data.message || "Failed to add to cart.");
+    }
+  } catch (err) {
+    console.error("Add to cart error:", err);
+    alert("Error adding to cart.");
+  }
+};
+
+
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;

@@ -12,6 +12,9 @@ import Sidebar from './components/Sidebar';
 import { useAuth } from './context/AuthContext';
 import styles from './App.module.css';
 import Cart from './pages/Cart';
+import Checkout from './pages/Checkout';
+import AdminDashboard from './pages/AdminDashboard';
+import AdminProducts from './pages/AdminProducts';
 
 function App() {
   const { user } = useAuth();
@@ -30,6 +33,9 @@ function App() {
             <Route path="/register" element={<Register />} />
             <Route path="/shop" element={<Shop />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/checkout" element={<Checkout />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/products" element={<AdminProducts/>} />
           </Routes>
         </div>
       </div>

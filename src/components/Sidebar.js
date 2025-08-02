@@ -8,12 +8,23 @@ const Sidebar = () => {
 
   if (!user) return null;
 
+  const isAdmin = user.user_id === 1;
+
   return (
     <div className={styles.sidebar}>
-      <Link to="/shop">Shop</Link>
-      <Link to="/cart">My Cart</Link>
-      <Link to="/profile">Profile</Link>
-      <Link to="/impact">My Impact</Link>
+      {isAdmin ? (
+        <>
+          <Link to="/admin">Dashboard</Link>
+          <Link to="/admin/products">Manage Products</Link>
+        </>
+      ) : (
+        <>
+          <Link to="/shop">Shop</Link>
+          <Link to="/cart">My Cart</Link>
+          <Link to="/profile">Profile</Link>
+          <Link to="/impact">My Impact</Link>
+        </>
+      )}
     </div>
   );
 };

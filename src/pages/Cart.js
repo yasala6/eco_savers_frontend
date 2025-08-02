@@ -2,31 +2,26 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './Cart.module.css';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
 
 const Cart = () => {
   const [cart, setCart] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const { user, token } = useAuth();
   const navigate = useNavigate();
+  const userId = localStorage.getItem('user_id');
 
   useEffect(() => {
-    if (!user) {
+    if (!userId) {
       navigate('/login');
       return;
     }
     fetchCart();
-  }, [user]);
+  }, [userId]);
 
   const fetchCart = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('http://localhost:3009/eco_savers/cart', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
+      const response = await axios.get(`http://localhost:3009/eco_savers/cart?user_id=${userId}`);
       setCart(response.data.data);
       setLoading(false);
     } catch (err) {
@@ -37,17 +32,14 @@ const Cart = () => {
 
   const updateQuantity = async (foodId, newQuantity) => {
     if (newQuantity < 1) return;
-    
+
     try {
-      await axios.put('/api/cart/update', 
-        { food_id: foodId, quantity: newQuantity },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        }
-      );
-      fetchCart(); // Refresh cart after update
+      await axios.put('http://localhost:3009/eco_savers/cart/update', {
+        user_id: userId,
+        food_id: foodId,
+        quantity: newQuantity
+      });
+      fetchCart();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update quantity');
     }
@@ -56,12 +48,12 @@ const Cart = () => {
   const removeItem = async (foodId) => {
     try {
       await axios.delete('http://localhost:3009/eco_savers/cart/remove', {
-        headers: {
-          Authorization: `Bearer ${token}`
-        },
-        data: { food_id: foodId }
+        data: {
+          user_id: userId,
+          food_id: foodId
+        }
       });
-      fetchCart(); // Refresh cart after removal
+      fetchCart();
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to remove item');
     }
@@ -70,8 +62,8 @@ const Cart = () => {
   const clearCart = async () => {
     try {
       await axios.delete('http://localhost:3009/eco_savers/cart/clear', {
-        headers: {
-          Authorization: `Bearer ${token}`
+        data: {
+          user_id: userId
         }
       });
       setCart([]);
@@ -95,7 +87,7 @@ const Cart = () => {
   return (
     <div className={styles.container}>
       <h2>Your Cart</h2>
-      
+
       {cart.length === 0 ? (
         <div className={styles.emptyCart}>
           <p>Your cart is empty</p>
@@ -113,7 +105,11 @@ const Cart = () => {
                 />
                 <div className={styles.itemDetails}>
                   <h4>{item.name}</h4>
-                  <p className={styles.condition}>{item.condition.replace(/_/g, ' ')}</p>
+                  {item.condition && (
+                    <p className={styles.condition}>
+                      {item.condition.replace(/_/g, ' ')}
+                    </p>
+                  )}
                   <p className={styles.price}>£{item.current_price.toFixed(2)} each</p>
                 </div>
                 <div className={styles.quantityControls}>

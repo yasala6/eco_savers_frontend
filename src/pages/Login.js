@@ -35,9 +35,16 @@ const Login = () => {
       if (data.status === 200) {
         // Save user and token
         localStorage.setItem('token', data.token);
+        const user = data.results[0];
+        localStorage.setItem('user_id', user.user_id);
         setUser(data.results[0]);
         alert('Logged in successfully!');
-        navigate('/shop');
+        if (user.user_id === 1) {
+          navigate('/admin');
+        } else {
+          navigate('/shop');
+        }
+
       } else {
         setError(data.message || 'Login failed');
       }
